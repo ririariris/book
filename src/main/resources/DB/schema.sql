@@ -1,0 +1,86 @@
+---- ================ bookinfo 책정보
+--DROP TABLE IF EXISTS 책정보;
+--CREATE TABLE bookinfo(
+--    idx INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+--    title varchar(200) NOT NULL ,
+--    writer varchar(100) NOT NULL,
+--    genre varchar(100) NOT NULL,
+--    publisher varchar(100) NOT NULL,
+--    publication_date DATE NOT NULL,
+--    poster LONGTEXT NOT NULL,
+--    summary LONGTEXT NOT NULL
+--);
+--
+--
+---- ================ user 회원정보
+--DROP TABLE IF EXISTS 회원정보;
+--CREATE TABLE `user` (
+--  `idx` int NOT NULL AUTO_INCREMENT,
+--  `id` int NOT NULL,
+--  `pw` varchar(200) NOT NULL,
+--  `name` varchar(50) NOT NULL,
+--  `subscribe` tinyint(1) NOT NULL,
+--  `like_idx` int NOT NULL,
+--  PRIMARY KEY (`idx`),
+--  UNIQUE KEY `id` (`id`),
+--  UNIQUE KEY `UK_krkxn4ic2r41obb8ga11jqgp6` (`id`),
+--  UNIQUE KEY `UK_8qtpnv06elxuryeuv1ac4ximm` (`id`),
+--  KEY `subscribe` (`subscribe`),
+--  KEY `FKop7nsw0hv1y9t5k0b9s732esa` (`like_idx`),
+--  CONSTRAINT `FK2lg87nl1mx4fepmrrhe8m2hwb` FOREIGN KEY (`like_idx`) REFERENCES `sub` (`idx`),
+--  CONSTRAINT `FKop7nsw0hv1y9t5k0b9s732esa` FOREIGN KEY (`like_idx`) REFERENCES `sub` (`idx`),
+--  CONSTRAINT `user_ibfk_1` FOREIGN KEY (`subscribe`) REFERENCES `sub` (`confirm`)
+--) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+---- ================ sub 구독
+--DROP TABLE IF EXISTS 구독;
+--CREATE TABLE `sub` (
+--  `idx` int NOT NULL AUTO_INCREMENT,
+--  `start_date` date NOT NULL,
+--  `end_date` date NOT NULL,
+--  `confirm` tinyint(1) NOT NULL,
+--  PRIMARY KEY (`idx`),
+--  KEY `회원정보_ibfk_1` (`confirm`)
+--) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+---- ================ bookmark 즐겨찾기
+--DROP TABLE IF EXISTS 즐겨찾기;
+--create table bookmark(
+--    idx INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+--    member_idx INT NOT NULL,
+--    book_idx INT NOT NULL
+--);
+--
+---- ================ like 피드 랜덤으로 view에 띄워주기 "좋아요"
+--DROP TABLE IF EXISTS 좋아요;
+--create table like(
+--    idx INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+--    member_idx INT NOT NULL,
+--    feed_idx int NOT NULL
+--);
+--
+---- ================ feed
+--DROP TABLE IF EXISTS 피드;
+--create table feed(
+--    idx INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+--    writer varchar(100) NOT NULL,
+--    title varchar(200) NOT NULL ,
+--    content LONGTEXT NOT NULL,
+--    create_date DATE NOT NULL,
+--    views INT NOT NULL,
+--    likes INT NOT NULL,
+--    bookinfo_idx INT NOT NULL
+--);
+---- ================ 리뷰 review
+--DROP TABLE IF EXISTS review;
+--create table 리뷰(
+--    idx INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+--    feed_idx INT NOT NULL,
+--    writer_idx INT NOT NULL,
+--    content LONGTEXT NOT NULL,
+--    create_date DATE NOT NULL,
+--    bookinfo_idx INT NOT NULL
+--    );
+--
+--
