@@ -12,6 +12,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.Jws;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.Date;
 
@@ -27,7 +28,6 @@ public class UserController {
     }
 
     @PostMapping("/login")
-//    @CrossOrigin(origins = "http://localhost:3000")
     public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
         try {
             boolean isAuthenticated = userService.authenticateUser(loginRequest.getId(), loginRequest.getPw());
@@ -39,8 +39,15 @@ public class UserController {
                 debugJwtToken(token);
                 debugEncodeJwtToken(token);
 
-                return ResponseEntity.ok().header("Authorization", "Bearer " + token).body("Login successful");
+                ObjectMapper objectMapper = new ObjectMapper();
+                String responseJson = objectMapper.createObjectNode()
+                        .put("token", token)
+                        .put("message", "Login successful")
+                        .toString();
 
+                return ResponseEntity.ok()
+                        .header("Content-Type", "application/json")
+                        .body(responseJson);
             } else {
                 // 인증 실패
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
@@ -106,7 +113,6 @@ public class UserController {
 
 
     @PostMapping("/signup")
-    @CrossOrigin(origins = "http://localhost:3000")
     public ResponseEntity<String> sign(@RequestBody Member member) {
         try {
             Member createdMember = userService.createUser(member);

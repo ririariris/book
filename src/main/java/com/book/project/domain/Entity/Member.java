@@ -33,7 +33,7 @@ public class Member {
     @Column(name="confirm")
     private Integer confirm;
 
-//    @OneToOne(mappedBy = "member", cascade = CascadeType.ALL)
-//    private Subscribe subscribe;
+    @OneToOne(mappedBy = "member", cascade = CascadeType.ALL)
+    private Subscribe subscribe;
 
 }
