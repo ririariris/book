@@ -74,4 +74,13 @@ public class UserService {
         return BCrypt.hashpw(pw, BCrypt.gensalt());
     }
 
+    public Member updateUser(Member member) {
+        // 입력값의 유효성 검사
+        if (!isValidUser(member)) {
+            throw new IllegalArgumentException("Invalid member information.");
+        }
+
+        // 회원 업데이트
+        return userRepository.save(member);
+    }
 }

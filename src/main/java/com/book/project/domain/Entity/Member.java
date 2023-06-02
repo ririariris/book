@@ -31,9 +31,13 @@ public class Member {
     private Integer likeIdx;
 
     @Column(name="confirm")
-    private Integer confirm;
+    private Boolean confirm;
 
     @OneToOne(mappedBy = "member", cascade = CascadeType.ALL)
     private Subscribe subscribe;
+
+    public boolean isConfirm() {
+        return Boolean.TRUE.equals(confirm);
+    }
 
 }
