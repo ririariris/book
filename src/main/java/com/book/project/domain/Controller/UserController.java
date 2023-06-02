@@ -5,6 +5,7 @@ import com.book.project.domain.Entity.Member;
 import com.book.project.domain.Entity.Subscribe;
 import com.book.project.domain.Service.SubscribeService;
 import com.book.project.domain.Service.UserService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,12 +37,15 @@ public class UserController {
     private SubscribeService subscribeService;
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest, HttpSession session) {
         try {
             boolean isAuthenticated = userService.authenticateUser(loginRequest.getId(), loginRequest.getPw());
             if (isAuthenticated) {
                 // 인증 성공 - JWT 발급
                 String token = generateJwtToken(loginRequest.getId());
+
+                // 세션에 토큰 저장
+                session.setAttribute("token", token);
 
                 // 구독 여부 확인
                 boolean isSubscribed = checkSubscription(loginRequest.getId());
@@ -69,6 +73,7 @@ public class UserController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
 
     private String generateJwtToken(String userId) {
         Claims claims = Jwts.claims().setSubject(userId);
