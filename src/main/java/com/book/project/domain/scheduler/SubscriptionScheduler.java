@@ -15,7 +15,7 @@ public class SubscriptionScheduler {
     @Autowired
     private SubscribeService subscribeService;
 
-    @Scheduled(cron = "0 0 0 * * *") // 매일 자정에 실행
+    @Scheduled(cron = "0 0 0 * * *")
     public void checkAndProcessSubscriptions() {
         // 현재 날짜와 시간을 가져오는 로직
         LocalDateTime currentDate = LocalDateTime.now();

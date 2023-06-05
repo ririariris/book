@@ -17,7 +17,7 @@ public class SubscribeService {
     public SubscribeService(SubscribeRepository subscribeRepository) {
         this.subscribeRepository = subscribeRepository;
     }
-
+    @Transactional
     public Subscribe saveSubscription(Subscribe subscribe) {
 
 

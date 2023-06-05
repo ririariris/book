@@ -3,9 +3,12 @@ package com.book.project.domain.Controller;
 import com.book.project.domain.DTO.LoginRequest;
 import com.book.project.domain.Entity.Member;
 import com.book.project.domain.Entity.Subscribe;
+import com.book.project.domain.Entity.WithdrawnMember;
 import com.book.project.domain.Service.SubscribeService;
 import com.book.project.domain.Service.UserService;
+import com.book.project.domain.Service.WithdrawnMemberService;
 import jakarta.servlet.http.HttpSession;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +38,9 @@ public class UserController {
 
     @Autowired
     private SubscribeService subscribeService;
+
+    @Autowired
+    private WithdrawnMemberService withdrawnMemberService;
 
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest, HttpSession session) {
@@ -194,7 +200,36 @@ public class UserController {
         return ResponseEntity.badRequest().body("회원 정보를 찾을 수 없습니다.");
     }
 
+    @DeleteMapping("/delete")
+    @Transactional
+    public ResponseEntity<String> delete(@RequestHeader("Authorization") String token) {
+        String memberId = verifyAndExtractMemberId(token);
 
+        if (memberId != null) {
+            // 회원 정보 조회
+            Member member = userService.getUserById(memberId);
+            if (member != null) {
+                // withdrawn_member 테이블에 회원 데이터 추가
+                WithdrawnMember withdrawnMember = WithdrawnMember.builder()
+                        .id(member.getId())
+                        .pw(member.getPw())
+                        .name(member.getName())
+                        .likeIdx(member.getLikeIdx())
+                        .confirm(member.isConfirm())
+                        .withdrawnDate(LocalDateTime.now().plusDays(14))
+                        .build();
+                withdrawnMemberService.saveWithdrawnMember(withdrawnMember);
+
+                // 회원 삭제
+                userService.deleteUser(member);
+
+                return ResponseEntity.ok("회원이 성공적으로 탈퇴 처리되었습니다.");
+            } else {
+                return ResponseEntity.badRequest().body("회원 정보를 찾을 수 없습니다.");
+            }
+        }
+        return ResponseEntity.badRequest().body("토큰 검증에 실패하였습니다.");
+    }
 
     private String verifyAndExtractMemberId(String token) {
         try {

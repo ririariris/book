@@ -2,6 +2,7 @@ package com.book.project.domain.Service;
 
 import com.book.project.domain.Entity.Member;
 import com.book.project.domain.Repository.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import org.mindrot.jbcrypt.BCrypt;
 
@@ -83,4 +84,16 @@ public class UserService {
         // 회원 업데이트
         return userRepository.save(member);
     }
+
+
+    public void deleteUser(Member member) {
+        String memberId = member.getId(); // 회원의 아이디 가져오기
+
+        if (memberId != null) {
+            userRepository.deleteById(memberId); // 아이디를 사용하여 회원 삭제
+        } else {
+            throw new IllegalArgumentException("회원의 아이디가 필요합니다.");
+        }
+    }
+
 }

@@ -27,7 +27,7 @@ public class Member {
     @Column(name="name")
     private String name;
 
-    @Column(name="likeIdx")
+    @Column(name="like_idx")
     private Integer likeIdx;
 
     @Column(name="confirm")
