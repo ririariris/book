@@ -1,5 +1,6 @@
 package com.book.project.domain.Repository;
 
+import com.book.project.domain.Entity.Member;
 import com.book.project.domain.Entity.WithdrawnMember;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -15,6 +16,7 @@ public interface WithdrawnMemberRepository extends JpaRepository<WithdrawnMember
 
     List<WithdrawnMember> findByWithdrawnDateBeforeOrWithdrawnDateEquals(LocalDateTime currentDate, LocalDateTime currentDate2);
 
+    WithdrawnMember findById(String id);
 
     void deleteById(String withdrawnMember);
 }

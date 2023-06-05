@@ -4,6 +4,7 @@ import com.book.project.domain.DTO.LoginRequest;
 import com.book.project.domain.Entity.Member;
 import com.book.project.domain.Entity.Subscribe;
 import com.book.project.domain.Entity.WithdrawnMember;
+import com.book.project.domain.Repository.WithdrawnMemberRepository;
 import com.book.project.domain.Service.SubscribeService;
 import com.book.project.domain.Service.UserService;
 import com.book.project.domain.Service.WithdrawnMemberService;
@@ -42,10 +43,22 @@ public class UserController {
     @Autowired
     private WithdrawnMemberService withdrawnMemberService;
 
+    @Autowired
+    private WithdrawnMemberRepository withdrawnMemberRepository;
+
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest, HttpSession session) {
         try {
             boolean isAuthenticated = userService.authenticateUser(loginRequest.getId(), loginRequest.getPw());
+
+            // 탈퇴 여부 확인
+            boolean isWithdrawn = checkWithdrawnMember(loginRequest.getId());
+
+            if (isWithdrawn) {
+                // 탈퇴한 회원이면 로그인 거부
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Withdrawn member cannot login");
+            }
+
             if (isAuthenticated) {
                 // 인증 성공 - JWT 발급
                 String token = generateJwtToken(loginRequest.getId());
@@ -72,7 +85,7 @@ public class UserController {
                         .body(responseJson);
             } else {
                 // 인증 실패
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Authentication failed");
             }
         } catch (IllegalArgumentException e) {
             // 예외 처리
@@ -110,6 +123,14 @@ public class UserController {
             }
         }
         return false; // 구독 정보가 없는 경우 false 반환
+    }
+
+
+
+    private boolean checkWithdrawnMember(String id) {
+        WithdrawnMember withdrawnMember = withdrawnMemberRepository.findById(id);
+
+        return withdrawnMember != null;
     }
 
     private void debugJwtToken(String token) {
@@ -153,6 +174,10 @@ public class UserController {
     @PostMapping("/signup")
     public ResponseEntity<String> sign(@RequestBody Member member) {
         try {
+            boolean isWithdrawnMember = checkWithdrawnMember(member.getId());
+            if (isWithdrawnMember) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Withdrawn member cannot sign up");
+            }
             Member createdMember = userService.createUser(member);
             return ResponseEntity.ok("Sign up successful");
         } catch (IllegalArgumentException e) {
